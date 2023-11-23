@@ -1,0 +1,33 @@
+name: Site CI
+
+on:
+  push:
+    branches: [ "ssg" ]
+  pull_request:
+    branches: [ "ssg" ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Install & Build # 執行指令
+      run: |
+        npm install
+        npm run build:ssg 
+    
+    - name: Pushes to another repository
+      id: push_directory
+      uses: cpina/github-action-push-to-another-repository@main
+      env:
+        API_TOKEN_GITHUB: ${{ secrets.ACCESS_TOKEN }}
+      with:
+        source-directory: dist/ssg
+        destination-github-username: 'lgtits'
+        destination-repository-name: 'products'
+        user-email: a0937370704@gmail.com
+        commit-message: See ORIGIN_COMMIT from $GITHUB_REF
+        target-branch: gh-pages
